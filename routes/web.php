@@ -23,7 +23,7 @@ Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 
 // Route để xóa sản phẩm khỏi giỏ hàng
-Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
 
 // Route để thanh toán
 Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
@@ -47,8 +47,11 @@ Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 // Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
 // // Route để xóa sản phẩm khỏi giỏ hàng
-// Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
+// web.php
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 
 

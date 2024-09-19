@@ -70,18 +70,22 @@ class CartController extends Controller
     
     
     // Xóa sản phẩm khỏi giỏ hàng
-    public function remove($id)
-    {
-        $cart = session()->get('cart', []);
-    
-        if (isset($cart[$id])) {
-            unset($cart[$id]);
-            session()->put('cart', $cart);
-            return redirect()->route('cart.view')->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
-        }
+// CartController.php
+public function remove($id)
+{
+    $cart = session()->get('cart');
 
-        return redirect()->route('cart.view')->with('error', 'Sản phẩm không tồn tại trong giỏ hàng.');
+    if (isset($cart[$id])) {
+        unset($cart[$id]);
     }
+
+    session()->put('cart', $cart);
+
+    return redirect()->back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
+}
+
+
+
     public function updateCart(Request $request)
 {
     $user = auth()->user();
@@ -110,5 +114,15 @@ class CartController extends Controller
     return redirect()->route('cart.view')->with('success', 'Giỏ hàng đã được cập nhật thành công!');
 }
 
+
+public function clear()
+{
+    // Xóa toàn bộ giỏ hàng từ session
+    session()->forget('cart');
     
+    // Chuyển hướng về trang giỏ hàng với thông báo thành công
+    return redirect()->route('cart.view')->with('success', 'Giỏ hàng đã được làm trống!');
 }
+
+    
+} 
