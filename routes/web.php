@@ -13,6 +13,42 @@ use App\Http\Controllers\Admin\DashboardController;
 
 // routes/web.php
 // Hiển thị các sản phẩm của danh mục
+use App\Http\Controllers\CartController;
+// routes/web.php
+
+// Route để xem giỏ hàng
+Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
+
+// Route để cập nhật sản phẩm trong giỏ hàng (không cần id)
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+
+// Route để xóa sản phẩm khỏi giỏ hàng
+Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+// Route để thanh toán
+Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+
+// // Các route khác...
+// Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+
+// Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+
+
+
+
+
+
+
+// // Route để xem giỏ hàng
+// Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
+
+// // Route để cập nhật sản phẩm trong giỏ hàng
+// Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+
+// // Route để xóa sản phẩm khỏi giỏ hàng
+// Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
 
 
 

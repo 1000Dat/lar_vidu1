@@ -28,7 +28,16 @@ class ProductController extends Controller
     
         return view('products.index', compact('products'));
     }
+
+     // Hiển thị chi tiết sản phẩm
+     public function show($id)
+     {
+         $product = Product::findOrFail($id);
+         return view('products.show', compact('product'));
+     }
 }
+
+
 
 //     // Hiển thị form tạo sản phẩm mới (chỉ dành cho admin)
 //     public function create()

@@ -12,6 +12,11 @@
                 <button type="submit" class="btn btn-danger shadow">Đăng xuất</button>
             </form>
         </div>
+   <!-- Link đến trang Giỏ Hàng -->
+   <div class="d-flex justify-content-end mb-4">
+            <a href="{{ route('cart.view') }}" class="btn btn-warning">Xem Giỏ Hàng</a>
+        </div>
+        
         <!-- Hiển thị sản phẩm -->
         <div class="row">
             @foreach ($products as $product)
@@ -26,7 +31,11 @@
                             <div class="btn-group">
                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-info">Chi tiết</a>
                                 <a href="#" class="btn btn-primary">Mua Ngay</a>
-                                <a href="#" class="btn btn-secondary">Thêm vào Giỏ Hàng</a>
+                               <!-- Nút "Thêm vào Giỏ Hàng" -->
+                               <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-secondary">Thêm vào Giỏ Hàng</button>
+                                </form>
                                 <form action="#" method="POST" style="display: inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-outline-danger">Yêu Thích</button>

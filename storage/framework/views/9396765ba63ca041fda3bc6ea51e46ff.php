@@ -12,6 +12,11 @@
                 <button type="submit" class="btn btn-danger shadow">Đăng xuất</button>
             </form>
         </div>
+   <!-- Link đến trang Giỏ Hàng -->
+   <div class="d-flex justify-content-end mb-4">
+            <a href="<?php echo e(route('cart.view')); ?>" class="btn btn-warning">Xem Giỏ Hàng</a>
+        </div>
+        
         <!-- Hiển thị sản phẩm -->
         <div class="row">
             <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -26,7 +31,11 @@
                             <div class="btn-group">
                                 <a href="<?php echo e(route('products.show', $product->id)); ?>" class="btn btn-info">Chi tiết</a>
                                 <a href="#" class="btn btn-primary">Mua Ngay</a>
-                                <a href="#" class="btn btn-secondary">Thêm vào Giỏ Hàng</a>
+                               <!-- Nút "Thêm vào Giỏ Hàng" -->
+                               <form action="<?php echo e(route('cart.add', $product->id)); ?>" method="POST">
+                                    <?php echo csrf_field(); ?>
+                                    <button type="submit" class="btn btn-secondary">Thêm vào Giỏ Hàng</button>
+                                </form>
                                 <form action="#" method="POST" style="display: inline;">
                                     <?php echo csrf_field(); ?>
                                     <button type="submit" class="btn btn-outline-danger">Yêu Thích</button>
@@ -115,5 +124,4 @@
         }
     </style>
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('products.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\lar_vidu1\resources\views/products/index.blade.php ENDPATH**/ ?>
