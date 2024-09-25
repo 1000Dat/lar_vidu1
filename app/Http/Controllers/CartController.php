@@ -152,5 +152,26 @@ class CartController extends Controller
     // Redirect back to the cart index with a success message
     return redirect()->route('cart.index')->with('success', 'Giỏ hàng đã được cập nhật thành công.');
 }
+public function checkout(Request $request)
+{
+    // Giả sử bạn lấy các sản phẩm trong giỏ hàng từ session
+    $cartItems = session()->get('cart', []);
+
+    // Kiểm tra nếu giỏ hàng trống
+    if (empty($cartItems)) {
+        return redirect()->route('products.index')->with('error', 'Giỏ hàng của bạn đang trống.');
+    }
+
+    // Tính tổng tiền cho giỏ hàng
+    $grandTotal = 0;
+    foreach ($cartItems as $item) {
+        $grandTotal += $item['price'] * $item['quantity'];
+    }
+
+    // Trả về view checkout với dữ liệu sản phẩm
+    return view('checkout.checkout', compact('cartItems', 'grandTotal')); // Chuyển biến cartItems và grandTotal vào view
+}
+
+
 
 }

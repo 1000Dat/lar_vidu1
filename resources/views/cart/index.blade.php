@@ -102,9 +102,20 @@
                     <button type="submit" class="btn btn-primary">Tiếp tục mua sắm</button>
                 </form>
 
-                <form action="{{ route('cart.checkout') }}" method="GET" class="d-inline">
-                    <button type="submit" class="btn btn-success">Thanh toán</button>
-                </form>
+                <form action="{{ route('payment.process') }}" method="POST">
+    @csrf
+    @foreach($cartItems as $item)
+        <input type="hidden" name="items[{{ $item->id }}][name]" value="{{ $item->product->name }}">
+        <input type="hidden" name="items[{{ $item->id }}][quantity]" value="{{ $item->quantity }}">
+        <input type="hidden" name="items[{{ $item->id }}][price]" value="{{ $item->price }}">
+    @endforeach
+    
+   
+    <button type="submit" class="btn btn-success">Thanh toán</button>
+</form>
+
+
+
             </div>
         </form>
     @else
