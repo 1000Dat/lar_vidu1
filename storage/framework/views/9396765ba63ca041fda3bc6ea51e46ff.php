@@ -12,7 +12,8 @@
         </div>
    <!-- Link đến trang Giỏ Hàng -->
    <div class="d-flex justify-content-end mb-4">
-            <a href="<?php echo e(route('cart.view')); ?>" class="btn btn-warning">Xem Giỏ Hàng</a>
+   <a href="<?php echo e(route('cart.index')); ?>" class="btn btn-warning">Xem Giỏ Hàng</a>
+
         </div>
         
         <!-- Hiển thị sản phẩm -->

@@ -3,6 +3,22 @@
 @section('title', 'Giỏ hàng')
 
 @section('content')
+<style>
+    .actions button {
+        flex: 1; /* Giúp nút có chiều rộng bằng nhau */
+        margin: 0 5px; /* Đảm bảo khoảng cách giữa các nút */
+        min-width: 150px; /* Đặt chiều rộng tối thiểu cho nút */
+    }
+
+    .cart-item img {
+        max-width: 100px; /* Đảm bảo hình ảnh không vượt quá 100px */
+    }
+
+    .table th, .table td {
+        vertical-align: middle; /* Căn giữa nội dung trong bảng */
+    }
+</style>
+
 <div class="container">
     <h1 class="mb-4">Giỏ hàng của bạn</h1>
 
@@ -12,14 +28,19 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     @php
-        $cartItems = session('cart', []);
         $cartItemCount = count($cartItems);
         $grandTotal = 0; // Khởi tạo tổng giá trị giỏ hàng
     @endphp
 
     @if($cartItemCount > 0)
-        <form action="{{ route('cart.update') }}" method="POST">
+        <form action="{{ route('cart.update') }}" method="POST" id="cart-form">
             @csrf
             <table class="table table-striped">
                 <thead>
@@ -33,28 +54,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($cartItems as $id => $details)
+                    @foreach($cartItems as $item)
                         @php
                             // Tính tổng tiền của từng sản phẩm (giá * số lượng)
-                            $totalPriceForItem = $details['price'] * $details['quantity'];
+                            $totalPriceForItem = $item->price * $item->quantity;
                             // Cộng tổng tiền sản phẩm này vào tổng số tiền giỏ hàng
                             $grandTotal += $totalPriceForItem;
                         @endphp
-                        <tr data-id="{{ $id }}" class="cart-item">
-                            <td>{{ $details['name'] }}</td>
+                        <tr data-id="{{ $item->id }}" class="cart-item">
+                            <td>{{ $item->product->name }}</td>
                             <td>
-                                <img src="{{ $details['image'] ? Storage::url($details['image']) : asset('images/default-placeholder.png') }}" alt="{{ $details['name'] }}" style="max-width: 100px;">
+                                <img src="{{ $item->product->image ? Storage::url($item->product->image) : asset('images/default-placeholder.png') }}" alt="{{ $item->product->name }}">
                             </td>
                             <td>
-                                <input type="number" name="updates[{{ $id }}][quantity]" class="quantity-input" value="{{ $details['quantity'] }}" min="1" required>
-                                <input type="hidden" name="updates[{{ $id }}][id]" value="{{ $id }}">
+                                <form action="{{ route('cart.update') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="updates[{{ $item->id }}][id]" value="{{ $item->id }}">
+                                    <input type="number" name="updates[{{ $item->id }}][quantity]" class="quantity-input" value="{{ $item->quantity }}" min="1" required 
+                                           onchange="this.form.submit()"> <!-- Gửi form khi số lượng thay đổi -->
+                                </form>
                             </td>
-                            <td class="price">{{ number_format($details['price'], 0, ',', '.') }} VND</td>
+                            <td class="price">{{ number_format($item->price, 0, ',', '.') }} VND</td>
                             <td class="total">{{ number_format($totalPriceForItem, 0, ',', '.') }} VND</td>
                             <td>
-                                <form action="{{ route('cart.remove', $id) }}" method="POST" class="delete-form">
+                                <form action="{{ route('cart.remove', $item->product_id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Xóa</button>
                                 </form>
                             </td>
                         </tr>
@@ -66,20 +92,26 @@
                 <h4><strong>Tổng tiền giỏ hàng: {{ number_format($grandTotal, 0, ',', '.') }} VND</strong></h4>
             </div>
 
-            <div class="actions d-flex justify-content-between mt-4">
-                <button type="submit" class="btn btn-secondary">Cập nhật giỏ hàng</button>
-                <a href="{{ route('products.index') }}" class="btn btn-primary">Tiếp tục mua sắm</a>
-                <a href="{{ route('cart.checkout') }}" class="btn btn-success">Thanh toán</a>
-            </div>
-        </form>
+            <div class="actions d-flex justify-content-around mt-4">
+                <form action="{{ route('cart.clear') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-warning">Làm trống giỏ hàng</button>
+                </form>
 
-        <form action="{{ route('cart.clear') }}" method="POST" class="clear-cart-form mt-3">
-            @csrf
-            <button type="submit" class="btn btn-warning btn-sm">Làm trống giỏ hàng</button>
+                <form action="{{ route('products.index') }}" method="GET" class="d-inline">
+                    <button type="submit" class="btn btn-primary">Tiếp tục mua sắm</button>
+                </form>
+
+                <form action="{{ route('cart.checkout') }}" method="GET" class="d-inline">
+                    <button type="submit" class="btn btn-success">Thanh toán</button>
+                </form>
+            </div>
         </form>
     @else
         <p>Giỏ hàng của bạn đang trống.</p>
-        <a href="{{ route('products.index') }}" class="btn btn-primary">Tiếp tục mua sắm</a>
+        <form action="{{ route('products.index') }}" method="GET" class="d-inline">
+            <button type="submit" class="btn btn-primary">Tiếp tục mua sắm</button>
+        </form>
     @endif
 </div>
 @endsection

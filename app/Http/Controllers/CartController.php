@@ -4,132 +4,153 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use Illuminate\Support\Facades\Session;
+use App\Models\Cart;
+use App\Models\CartItem;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    // Hiển thị giỏ hàng
     public function viewCart()
     {
-        $cartItems = session()->get('cart', []);
-        \Log::info('Cart Items:', $cartItems);
+        // Kiểm tra người dùng đã đăng nhập
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để xem giỏ hàng.');
+        }
     
-        return view('cart.index', compact('cartItems'));
+        // Lấy giỏ hàng của người dùng
+        $cart = Cart::where('user_id', $user->id)->with('items')->first();
+    
+        // Nếu giỏ hàng không tồn tại, khởi tạo mảng rỗng
+        $cartItems = $cart ? $cart->items : collect(); // Sử dụng collect() để đảm bảo là Collection
+    
+        // Tính tổng giá của giỏ hàng
+        $totalAmount = $cartItems->sum(function ($item) {
+            return $item->quantity * $item->price; // Tính tổng cho từng sản phẩm
+        });
+    
+        // Kiểm tra và ghi log thông tin giỏ hàng
+        Log::info('Cart Items:', $cartItems->toArray());
+        Log::info('Total Amount:', ['total' => $totalAmount]);
+    
+        // Trả về view với danh sách sản phẩm trong giỏ hàng và tổng giá
+        return view('cart.index', compact('cartItems', 'totalAmount'));
     }
     
-    // Thêm sản phẩm vào giỏ hàng
+
     public function add(Request $request, $id)
     {
+        // Tìm sản phẩm theo ID
         $product = Product::find($id);
     
+        // Kiểm tra xem sản phẩm có tồn tại không
         if (!$product) {
             return redirect()->route('products.index')->with('error', 'Sản phẩm không tồn tại!');
         }
     
-        $cart = session()->get('cart', []);
+        // Lấy người dùng hiện tại
+        $user = Auth::user();
     
-        // Cập nhật giỏ hàng
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-        } else {
-            $cart[$id] = [
-                "name" => $product->name,
-                "quantity" => 1,
-                "price" => $product->price,
-                "image" => $product->image,
-            ];
-        }
+        // Tìm hoặc tạo giỏ hàng cho người dùng
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
     
-        session()->put('cart', $cart);
-    
-        return redirect()->route('cart.view')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng!');
-    }
-    public function update(Request $request)
-    {
-        $updates = $request->input('updates', []);
-        $cart = session()->get('cart', []);
-    
-        foreach ($updates as $update) {
-            $id = $update['id'];
-            $quantity = $update['quantity'];
-    
-            if (isset($cart[$id])) {
-                if ($quantity <= 0) {
-                    unset($cart[$id]); // Xóa sản phẩm nếu số lượng <= 0
-                } else {
-                    $cart[$id]['quantity'] = $quantity; // Cập nhật số lượng
-                }
-            }
-        }
-    
-        session()->put('cart', $cart);
-        
-        // Trả về một thông điệp đơn giản
-        return redirect()->back()->with('message', 'Giỏ hàng đã được cập nhật!');
-    }
-    
-    
-    // Xóa sản phẩm khỏi giỏ hàng
-// CartController.php
-public function remove($id)
-{
-    // Debug: Kiểm tra giỏ hàng trước khi xóa
-    \Log::info('Giỏ hàng trước khi xóa: ', session()->get('cart'));
-
-    $cart = session()->get('cart');
-
-    // Check if the item exists in the cart
-    if (isset($cart[$id])) {
-        unset($cart[$id]); // Remove the item completely
-        session()->put('cart', $cart); // Update the session
-
-        // Debug: Kiểm tra giỏ hàng sau khi xóa
-        \Log::info('Giỏ hàng sau khi xóa: ', session()->get('cart'));
-
-        return redirect()->back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
-    }
-
-    return redirect()->back()->with('error', 'Sản phẩm không tồn tại trong giỏ hàng.');
-}
-
-
-    public function updateCart(Request $request)
-{
-    $user = auth()->user();
-    $cart = Cart::where('user_id', $user->id)->first();
-
-    if (!$cart) {
-        return redirect()->route('cart.view')->with('error', 'Giỏ hàng không tồn tại.');
-    }
-
-    foreach ($request->input('updates') as $update) {
+        // Tìm sản phẩm trong giỏ hàng, nếu có thì tăng số lượng
         $cartItem = CartItem::where('cart_id', $cart->id)
-                             ->where('product_id', $update['id'])
+                             ->where('product_id', $id)
                              ->first();
-
+    
         if ($cartItem) {
-            // Cập nhật số lượng
+            // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
+            $cartItem->quantity += 1;
+            // Đảm bảo giá không thay đổi khi số lượng tăng
+            // Không cần gọi save lại cho giá nếu đã có giá ban đầu
+            $cartItem->save();
+        } else {
+            // Nếu chưa có sản phẩm trong giỏ hàng thì thêm mới
+            CartItem::create([
+                'cart_id' => $cart->id,
+                'product_id' => $id,
+                'quantity' => 1, // Mặc định số lượng là 1
+                'price' => $product->price, // Lấy giá từ sản phẩm
+            ]);
+        }
+    
+        // Đảm bảo tên route chính xác
+        return redirect()->route('cart.index')->with('success', 'Sản phẩm đã được thêm vào giỏ hàng!');
+    }
+    
+    // Xóa toàn bộ giỏ hàng
+    public function clear()
+    {
+        // Lấy người dùng đang đăng nhập
+        $user = auth()->user();
+        
+        // Lấy giỏ hàng của người dùng
+        $cart = Cart::where('user_id', $user->id)->first();
+
+        // Kiểm tra xem giỏ hàng có tồn tại không
+        if ($cart) {
+            // Xóa tất cả các mục trong giỏ hàng
+            CartItem::where('cart_id', $cart->id)->delete();
+
+            // Xóa giỏ hàng
+            $cart->delete();
+
+            // Chuyển hướng về trang giỏ hàng với thông báo thành công
+            return redirect()->route('cart.index')->with('success', 'Giỏ hàng đã được làm trống!');
+        }
+
+        // Nếu giỏ hàng không tồn tại, chuyển hướng về trang giỏ hàng với thông báo
+        return redirect()->route('cart.index')->with('error', 'Giỏ hàng hiện tại không có sản phẩm nào.');
+    }
+
+    // Cập nhật tổng giá của giỏ hàng
+    protected function updateCartTotal(Cart $cart)
+    {
+        $total = CartItem::where('cart_id', $cart->id)->sum(DB::raw('quantity * price'));
+        $cart->total = $total; // Giả sử bạn có một trường 'total' trong bảng Cart
+        $cart->save();
+    }
+
+    public function removeItem(Request $request, $itemId)
+    {
+        $user = Auth::user();
+        $cart = Cart::where('user_id', $user->id)->first();
+    
+        if (!$cart) {
+            return redirect()->route('cart.index')->with('error', 'Giỏ hàng không tồn tại.');
+        }
+    
+        // Tìm sản phẩm cần xóa trong bảng CartItem
+        $cartItem = CartItem::where('cart_id', $cart->id)->where('product_id', $itemId)->first();
+    
+        if ($cartItem) {
+            // Xóa sản phẩm khỏi giỏ hàng
+            $cartItem->delete();
+            return redirect()->route('cart.index')->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
+        }
+    
+        return redirect()->route('cart.index')->with('error', 'Sản phẩm không tồn tại trong giỏ hàng.');
+    }
+    
+    public function update(Request $request)
+{
+    $updates = $request->input('updates');
+
+    foreach ($updates as $update) {
+        $cartItem = CartItem::find($update['id']);
+        
+        if ($cartItem) {
+            // Update quantity in the database
             $cartItem->quantity = $update['quantity'];
             $cartItem->save();
         }
     }
 
-    // Tính toán lại tổng giá của giỏ hàng
-    $this->updateCartTotal($cart);
-
-    // Redirect về giỏ hàng với thông báo thành công
-    return redirect()->route('cart.view')->with('success', 'Giỏ hàng đã được cập nhật thành công!');
+    // Redirect back to the cart index with a success message
+    return redirect()->route('cart.index')->with('success', 'Giỏ hàng đã được cập nhật thành công.');
 }
 
-
-public function clear()
-{
-    // Xóa toàn bộ giỏ hàng từ session
-    session()->forget('cart');
-    
-    // Chuyển hướng về trang giỏ hàng với thông báo thành công
-    return redirect()->route('cart.view')->with('success', 'Giỏ hàng đã được làm trống!');
 }
-
-    
-} 
