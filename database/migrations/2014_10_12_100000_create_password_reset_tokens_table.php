@@ -1,3 +1,4 @@
+php artisan make:migration add_image_to_products_table --table=products
 <?php
 
 use Illuminate\Database\Migrations\Migration;

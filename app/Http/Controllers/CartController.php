@@ -73,17 +73,24 @@ class CartController extends Controller
 // CartController.php
 public function remove($id)
 {
+    // Debug: Kiểm tra giỏ hàng trước khi xóa
+    \Log::info('Giỏ hàng trước khi xóa: ', session()->get('cart'));
+
     $cart = session()->get('cart');
 
+    // Check if the item exists in the cart
     if (isset($cart[$id])) {
-        unset($cart[$id]);
+        unset($cart[$id]); // Remove the item completely
+        session()->put('cart', $cart); // Update the session
+
+        // Debug: Kiểm tra giỏ hàng sau khi xóa
+        \Log::info('Giỏ hàng sau khi xóa: ', session()->get('cart'));
+
+        return redirect()->back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
     }
 
-    session()->put('cart', $cart);
-
-    return redirect()->back()->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng.');
+    return redirect()->back()->with('error', 'Sản phẩm không tồn tại trong giỏ hàng.');
 }
-
 
 
     public function updateCart(Request $request)

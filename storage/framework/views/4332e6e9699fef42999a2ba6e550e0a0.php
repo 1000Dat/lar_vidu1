@@ -93,7 +93,7 @@
             <ul class="list-group">
                 <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <?php echo e($category->name); ?>
+                        <?php echo e($category->name); ?>git add .
 
                         <!-- Bạn có thể bỏ comment các phần này nếu cần -->
                         <!-- <div>
