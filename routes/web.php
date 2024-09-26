@@ -38,7 +38,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
 
-    Route::get('/payment', [PaymentController::class, 'showPaymentPage'])->name('payment.show');
+   
+
+
+    Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::post('/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');
+    Route::post('/payment/process', [YourControllerName::class, 'processPaymentview'])->name('payment.process');
 Route::post('/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
 
 
@@ -46,7 +51,7 @@ Route::post('/payment/process', [PaymentController::class, 'processPayment'])->n
   // Route xử lý thanh toán
 
 // Định nghĩa route cho trang thanh toán
-Route::post('/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
+
     // Admin routes
     Route::middleware('admin')->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');

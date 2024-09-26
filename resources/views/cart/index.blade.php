@@ -4,9 +4,19 @@
 
 @section('content')
 <style>
+    .actions {
+        display: flex;
+        justify-content: space-between; /* Căn chỉnh nút đều */
+        margin-top: 20px; /* Khoảng cách trên */
+    }
+
+    .actions form {
+        flex: 1; /* Đảm bảo tất cả các form có chiều rộng bằng nhau */
+        margin: 0 5px; /* Khoảng cách giữa các nút */
+    }
+
     .actions button {
-        flex: 1; /* Giúp nút có chiều rộng bằng nhau */
-        margin: 0 5px; /* Đảm bảo khoảng cách giữa các nút */
+        width: 100%; /* Nút chiếm toàn bộ chiều rộng của khối chứa */
         min-width: 150px; /* Đặt chiều rộng tối thiểu cho nút */
     }
 
@@ -92,7 +102,7 @@
                 <h4><strong>Tổng tiền giỏ hàng: {{ number_format($grandTotal, 0, ',', '.') }} VND</strong></h4>
             </div>
 
-            <div class="actions d-flex justify-content-around mt-4">
+            <div class="actions">
                 <form action="{{ route('cart.clear') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-warning">Làm trống giỏ hàng</button>
@@ -102,23 +112,16 @@
                     <button type="submit" class="btn btn-primary">Tiếp tục mua sắm</button>
                 </form>
 
-                <form action="{{ route('payment.process') }}" method="POST">
-    @csrf
-    @foreach($cartItems as $item)
-        <input type="hidden" name="items[{{ $item->id }}][id]" value="{{ $item->id }}">
-        <input type="hidden" name="items[{{ $item->id }}][name]" value="{{ $item->product->name }}">
-        <input type="hidden" name="items[{{ $item->id }}][quantity]" value="{{ $item->quantity }}">
-        <input type="hidden" name="items[{{ $item->id }}][price]" value="{{ $item->price }}">
-    @endforeach
-
-    <div class="actions d-flex justify-content-around mt-4">
-        <button type="submit" class="btn btn-success">Thanh toán</button>
-    </div>
-</form>
-
-
-
-
+                <form action="{{ route('payment.process') }}" method="POST" class="d-inline">
+                    @csrf
+                    @foreach($cartItems as $item)
+                        <input type="hidden" name="items[{{ $item->id }}][id]" value="{{ $item->id }}">
+                        <input type="hidden" name="items[{{ $item->id }}][name]" value="{{ $item->product->name }}">
+                        <input type="hidden" name="items[{{ $item->id }}][quantity]" value="{{ $item->quantity }}">
+                        <input type="hidden" name="items[{{ $item->id }}][price]" value="{{ $item->price }}">
+                    @endforeach
+                    <button type="submit" class="btn btn-success">Thanh toán</button>
+                </form>
             </div>
         </form>
     @else

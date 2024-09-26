@@ -36,12 +36,12 @@
 
         .total-row td {
             text-align: right;
-            border: none; /* Bỏ viền cho ô tổng tiền */
+            border: none; /* No border for total row */
         }
 
         .total-amount {
             font-weight: bold;
-            color: #d9534f;
+            color: #d9534f; /* Red color for total amount */
         }
 
         .address-form {
@@ -59,7 +59,7 @@
             width: 100%;
         }
 
-        /* Thiết kế nút bấm đẹp hơn */
+        /* Button styles */
         .btn {
             padding: 12px 25px;
             border: none;
@@ -67,7 +67,7 @@
             cursor: pointer;
             margin-top: 10px;
             font-size: 16px;
-            transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng hover */
+            transition: background-color 0.3s ease, transform 0.2s ease;
             text-align: center;
         }
 
@@ -78,7 +78,7 @@
 
         .btn-success:hover {
             background-color: #218838;
-            transform: translateY(-2px); /* Hiệu ứng nâng lên khi hover */
+            transform: translateY(-2px);
         }
 
         .btn-info {
@@ -101,14 +101,20 @@
             transform: translateY(-2px);
         }
 
-        /* Canh chỉnh các nút cho đẹp */
+        /* Align buttons nicely */
         .btn-group {
             display: flex;
             justify-content: center;
-            gap: 15px; /* Khoảng cách giữa các nút */
+            gap: 15px; /* Space between buttons */
             margin-top: 20px;
         }
 
+        /* Media query for responsiveness */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+        }
     </style>
 
     <div class="container">
@@ -138,14 +144,14 @@
            </tbody>
         </table>
 
-        <h3 style="text-align: left; margin-left: 0; margin-top: 20px;">Địa Chỉ Giao Hàng:</h3>
-        <form action="{{ route('payment.process') }}" method="POST" class="address-form">
+        <h3 style="text-align: left; margin-top: 20px;">Địa Chỉ Giao Hàng:</h3>
+        <form action="{{ route('payment.confirm') }}" method="POST" class="address-form" id="payment-form">
             @csrf
             <div class="form-group">
                 <input type="text" name="shipping_address" id="shipping_address" class="form-control" placeholder="Nhập địa chỉ giao hàng" required>
             </div>
 
-            <h3 style="text-align: left; margin-left: 0; margin-top: 20px;">Phương Thức Thanh Toán:</h3>
+            <h3 style="text-align: left; margin-top: 20px;">Phương Thức Thanh Toán:</h3>
             <div class="form-group payment-method">
                 <select name="payment_method" id="payment_method" class="form-control" required>
                     <option value="" disabled selected>Chọn phương thức thanh toán</option>
@@ -153,7 +159,9 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-success">Xác Nhận</button>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success">Xác Nhận Thanh Toán</button>
+            </div>
         </form>
 
         <div class="btn-group">
@@ -161,4 +169,31 @@
             <a href="{{ route('cart.index') }}" class="btn btn-back">Quay Lại Giỏ Hàng</a>
         </div>
     </div>
+
+    <!-- Thêm SweetAlert vào đây -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('payment-form');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Ngăn chặn gửi form ngay lập tức
+
+                swal({
+                    title: "Xác Nhận Đơn Hàng",
+                    text: "Bạn có chắc chắn muốn xác nhận đơn hàng này?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Có, xác nhận!",
+                    cancelButtonText: "Không, quay lại!",
+                    closeOnConfirm: false
+                }, function(isConfirm) {
+                    if (isConfirm) {
+                        form.submit(); // Gửi form nếu người dùng xác nhận
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
