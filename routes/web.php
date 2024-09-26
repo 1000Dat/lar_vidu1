@@ -38,6 +38,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
 
+    Route::get('/order/success', function () {
+        return view('checkout.success'); // Đảm bảo rằng bạn đã tạo view này
+    })->name('order.success');
+    
+
+
   // Route xử lý thanh toán
 
 // Định nghĩa route cho trang thanh toán

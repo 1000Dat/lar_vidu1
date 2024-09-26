@@ -2,7 +2,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Order; // Đảm bảo đã import Order model
+use App\Models\OrderItem; // Đảm bảo đã import OrderItem model
 class PaymentController extends Controller
 {
     public function processPayment(Request $request)

@@ -82,6 +82,10 @@
             background-color: #f0ad4e; /* Màu sắc cho nút quay lại */
             color: white;
         }
+
+        .payment-method {
+            margin: 20px 0;
+        }
     </style>
 
     <div class="container">
@@ -91,7 +95,6 @@
         <table class="table">
             <thead>
                 <tr>
-                
                     <th>Tên Sản Phẩm</th>
                     <th>Số Lượng</th>
                     <th>Giá</th>
@@ -100,7 +103,7 @@
             <tbody>
                 @foreach($items as $item)
                     <tr>
-                    <td>{{ $item['name'] }}</td>
+                        <td>{{ $item['name'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
                         <td>{{ number_format($item['price'], 0, ',', '.') }} VNĐ</td>
                     </tr>
@@ -116,10 +119,22 @@
             <div class="form-group">
                 <input type="text" name="shipping_address" id="shipping_address" class="form-control" placeholder="Nhập địa chỉ giao hàng" required>
             </div>
-            <button type="submit" class="btn btn-success">Xác Nhận Địa Chỉ</button>
+
+            <!-- Phương Thức Thanh Toán -->
+            <h3>Phương Thức Thanh Toán:</h3>
+            <div class="form-group payment-method">
+                <select name="payment_method" id="payment_method" class="form-control" required>
+                    <option value="" disabled selected>Chọn phương thức thanh toán</option>
+                    <option value="cod">Nhận Hàng Khi Thanh Toán (COD)</option>
+                    <!-- <option value="online">Thanh Toán Online</option> -->
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success">Xác Nhận </button>
         </form>
 
         <button onclick="window.print()" class="btn btn-info">In Hóa Đơn</button>
         <a href="{{ route('cart.index') }}" class="btn btn-back">Quay Lại Giỏ Hàng</a> <!-- Nút quay lại giỏ hàng -->
     </div>
 @endsection
+`
