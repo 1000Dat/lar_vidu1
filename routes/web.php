@@ -38,10 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
 
-    Route::get('/order/success', function () {
-        return view('checkout.success'); // Đảm bảo rằng bạn đã tạo view này
-    })->name('order.success');
-    
+    Route::get('/payment', [PaymentController::class, 'showPaymentPage'])->name('payment.show');
+Route::post('/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
+
 
 
   // Route xử lý thanh toán

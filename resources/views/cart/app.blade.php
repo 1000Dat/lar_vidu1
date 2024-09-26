@@ -19,9 +19,7 @@
         @yield('content') <!-- Nội dung sẽ được chèn vào đây -->
     </main>
 
-    <footer>
-        <p>Bản quyền © {{ date('Y') }}</p>
-    </footer>
+   
 
     <script>
         function confirmPayment() {

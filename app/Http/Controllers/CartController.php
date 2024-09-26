@@ -154,24 +154,27 @@ class CartController extends Controller
 }
 public function checkout(Request $request)
 {
-    // Giả sử bạn lấy các sản phẩm trong giỏ hàng từ session
-    $cartItems = session()->get('cart', []);
+    // Lấy người dùng hiện tại
+    $user = Auth::user();
+
+    // Lấy tất cả các sản phẩm trong giỏ hàng của người dùng từ bảng CartItem
+    $cartItems = CartItem::whereHas('cart', function ($query) use ($user) {
+        $query->where('user_id', $user->id);
+    })->get();
 
     // Kiểm tra nếu giỏ hàng trống
-    if (empty($cartItems)) {
+    if ($cartItems->isEmpty()) {
         return redirect()->route('products.index')->with('error', 'Giỏ hàng của bạn đang trống.');
     }
 
     // Tính tổng tiền cho giỏ hàng
-    $grandTotal = 0;
-    foreach ($cartItems as $item) {
-        $grandTotal += $item['price'] * $item['quantity'];
-    }
+    $grandTotal = $cartItems->sum(function($item) {
+        return $item->price * $item->quantity;
+    });
 
-    // Trả về view checkout với dữ liệu sản phẩm
-    return view('checkout.checkout', compact('cartItems', 'grandTotal')); // Chuyển biến cartItems và grandTotal vào view
+    // Trả về view payment với dữ liệu sản phẩm
+    return view('payment.payment', compact('cartItems', 'grandTotal'));
 }
-
 
 
 }

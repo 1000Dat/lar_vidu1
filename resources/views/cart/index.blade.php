@@ -105,14 +105,17 @@
                 <form action="{{ route('payment.process') }}" method="POST">
     @csrf
     @foreach($cartItems as $item)
+        <input type="hidden" name="items[{{ $item->id }}][id]" value="{{ $item->id }}">
         <input type="hidden" name="items[{{ $item->id }}][name]" value="{{ $item->product->name }}">
         <input type="hidden" name="items[{{ $item->id }}][quantity]" value="{{ $item->quantity }}">
         <input type="hidden" name="items[{{ $item->id }}][price]" value="{{ $item->price }}">
     @endforeach
-    
-   
-    <button type="submit" class="btn btn-success">Thanh toán</button>
+
+    <div class="actions d-flex justify-content-around mt-4">
+        <button type="submit" class="btn btn-success">Thanh toán</button>
+    </div>
 </form>
+
 
 
 
