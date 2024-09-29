@@ -37,9 +37,6 @@ class PaymentController extends Controller
     // Trả về view checkout với dữ liệu sản phẩm
     return view('checkout.checkout', compact('cartItems', 'grandTotal'));
 }
-
-
-
 public function confirm(Request $request)
 {
     // Xác thực dữ liệu đầu vào
@@ -61,6 +58,22 @@ public function confirm(Request $request)
         return redirect()->route('products.index')->with('error', 'Giỏ hàng của bạn đang trống.');
     }
 
+    // Kiểm tra xem tất cả các sản phẩm có sẵn trong kho không trước khi tạo đơn hàng
+    foreach ($cartItems as $item) {
+        // Lấy sản phẩm tương ứng
+        $product = Product::find($item->product_id);
+
+        // Kiểm tra nếu sản phẩm đã hết hàng
+        if ($product->quantity == 0) {
+            return redirect()->route('cart.index')->with('error', 'Sản phẩm ' . $product->name . ' đã hết hàng.');
+        }
+
+        // Kiểm tra nếu số lượng sản phẩm có đủ để thực hiện đơn hàng
+        if ($product->quantity < $item->quantity) {
+            return redirect()->route('cart.index')->with('error', 'Sản phẩm ' . $product->name . ' không đủ số lượng.');
+        }
+    }
+
     // Tạo đơn hàng
     $order = new Order();
     $order->user_id = $user->id;
@@ -74,8 +87,18 @@ public function confirm(Request $request)
     $order->total_price = $grandTotal;
     $order->save();
 
-    // Tạo các mục đơn hàng
+    // Xử lý từng sản phẩm trong giỏ hàng (sau khi đã đảm bảo tất cả các sản phẩm có đủ số lượng)
     foreach ($cartItems as $item) {
+        // Lấy sản phẩm tương ứng
+        $product = Product::find($item->product_id);
+
+        // Trừ số lượng sản phẩm trong kho
+        $product->quantity -= $item->quantity;
+
+        // Lưu cập nhật số lượng
+        $product->save();
+
+        // Tạo mục đơn hàng
         OrderItem::create([
             'order_id' => $order->id,
             'product_id' => $item->product_id,
@@ -90,7 +113,8 @@ public function confirm(Request $request)
     })->delete();
 
     // Chuyển hướng đến trang xác nhận
-    return redirect()->route('products.index');
+    return redirect()->route('products.index')->with('success', 'Đặt hàng thành công!');
 }
+
 
 }

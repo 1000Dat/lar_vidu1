@@ -53,13 +53,37 @@ Route::post('/payment/process', [PaymentController::class, 'processPayment'])->n
 // Định nghĩa route cho trang thanh toán
 
     // Admin routes
-    Route::middleware('admin')->group(function () {
-        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    // Route::middleware('admin')->group(function () {
+    //     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        
 
-        // Admin categories
-        Route::resource('admin/categories', CategoryController::class);
+    //     // Admin categories
+    //     Route::resource('admin/categories', CategoryController::class);
 
-        // Admin products
-        Route::resource('admin/products', ProductController::class)->except(['index', 'show']);
-    });
+    //     // Admin products
+    //     Route::resource('admin/products', ProductController::class)->except(['index', 'show']);
+    // });
+
+    // Routes admin
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    
+    // Danh mục
+    Route::get('categories', [AdminController::class, 'categories'])->name('admin.categories');
+    Route::get('categories/create', [AdminController::class, 'createCategory'])->name('admin.categories.create');
+    Route::post('categories', [AdminController::class, 'storeCategory'])->name('admin.categories.store');
+    Route::get('categories/{category}/edit', [AdminController::class, 'editCategory'])->name('admin.categories.edit');
+    Route::put('categories/{category}', [AdminController::class, 'updateCategory'])->name('admin.categories.update');
+    Route::delete('categories/{category}', [AdminController::class, 'destroyCategory'])->name('admin.categories.destroy');
+
+    // Sản phẩm
+    Route::get('products', [AdminController::class, 'products'])->name('admin.products');
+    Route::get('products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
+    Route::post('products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
+    Route::get('products/{product}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
+    Route::put('products/{product}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
+    Route::delete('products/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+});
+
+    
 });
