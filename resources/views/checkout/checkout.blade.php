@@ -151,6 +151,10 @@
                 <input type="text" name="shipping_address" id="shipping_address" class="form-control" placeholder="Nhập địa chỉ giao hàng" required>
             </div>
 
+            <div class="form-group">
+                <input type="text" name="phone" id="phone" class="form-control" placeholder="Nhập số điện thoại" required>
+            </div>
+
             <h3 style="text-align: left; margin-top: 20px;">Phương Thức Thanh Toán:</h3>
             <div class="form-group payment-method">
                 <select name="payment_method" id="payment_method" class="form-control" required>

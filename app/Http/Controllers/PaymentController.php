@@ -36,12 +36,12 @@ class PaymentController extends Controller
 
     // Trả về view checkout với dữ liệu sản phẩm
     return view('checkout.checkout', compact('cartItems', 'grandTotal'));
-}
-public function confirm(Request $request)
+}public function confirm(Request $request)
 {
     // Xác thực dữ liệu đầu vào
     $request->validate([
         'shipping_address' => 'required|string|max:255',
+        'phone' => 'required|string|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:15', // Validate số điện thoại
         'payment_method' => 'required|string',
     ]);
 
@@ -78,6 +78,7 @@ public function confirm(Request $request)
     $order = new Order();
     $order->user_id = $user->id;
     $order->shipping_address = $request->input('shipping_address');
+    $order->phone = $request->input('phone'); // Lưu số điện thoại
     $order->payment_method = $request->input('payment_method');
 
     // Khởi tạo tổng tiền
@@ -115,6 +116,7 @@ public function confirm(Request $request)
     // Chuyển hướng đến trang xác nhận
     return redirect()->route('orders.index')->with('success', 'Đặt hàng thành công!');
 }
+
 
 
 }

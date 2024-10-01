@@ -13,9 +13,44 @@
                 <!-- Order Information -->
                 <h5 class="card-title"><strong>Thông Tin Đơn Hàng</strong></h5>
                 <p><strong>Địa chỉ giao hàng:</strong> {{ $order->shipping_address }}</p>
+                <p><strong>Số điện thoại:</strong> {{ $order->phone }}</p> <!-- Thêm số điện thoại -->
                 <p><strong>Phương thức thanh toán:</strong> {{ $order->payment_method }}</p>
                 <p><strong>Tổng giá:</strong> {{ number_format($order->total_price, 0, ',', '.') }} VND</p>
-                <p><strong>Trạng thái:</strong> {{ $order->status }}</p>
+                <p><strong>Trạng thái:</strong> 
+                    <span class="@switch($order->status)
+                                    @case('pending')
+                                        status-pending
+                                        @break
+                                    @case('processing')
+                                        status-processing
+                                        @break
+                                    @case('completed')
+                                        status-completed
+                                        @break
+                                    @case('cancelled')
+                                        status-cancelled
+                                        @break
+                                    @default
+                                        status-unknown
+                                @endswitch">
+                        @switch($order->status)
+                            @case('pending')
+                                Chờ xử lý
+                                @break
+                            @case('processing')
+                                Đang xử lý
+                                @break
+                            @case('completed')
+                                Hoàn thành
+                                @break
+                            @case('cancelled')
+                                Đã hủy
+                                @break
+                            @default
+                                Không xác định
+                        @endswitch
+                    </span>
+                </p>
             </div>
         </div>
 
@@ -65,4 +100,32 @@
             @endif
         </div>
     </div>
+
+    <style>
+        /* CSS cho trạng thái đơn hàng */
+        .status-pending {
+            color: #ffc107; /* Vàng cho trạng thái 'Chờ xử lý' */
+            font-weight: bold;
+        }
+
+        .status-processing {
+            color: #007bff; /* Xanh dương cho trạng thái 'Đang xử lý' */
+            font-weight: bold;
+        }
+
+        .status-completed {
+            color: #28a745; /* Xanh lá cho trạng thái 'Hoàn thành' */
+            font-weight: bold;
+        }
+
+        .status-cancelled {
+            color: #dc3545; /* Đỏ cho trạng thái 'Đã hủy' */
+            font-weight: bold;
+        }
+
+        .status-unknown {
+            color: #6c757d; /* Xám cho trạng thái 'Không xác định' */
+            font-weight: bold;
+        }
+    </style>
 @endsection

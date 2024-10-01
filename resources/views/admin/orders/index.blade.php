@@ -36,6 +36,33 @@
             border-radius: 5px;
         }
 
+        .input-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            flex: 1; /* Make input take up available space */
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .input-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            color: white;
+            background-color: #007bff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-group button:hover {
+            background-color: #0056b3;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -54,22 +81,12 @@
             text-align: center;
         }
 
+        .payment-method {
+            text-align: center;
+        }
+
         tr:hover {
-            background-color: #f1f1f1; /* Hiệu ứng hover */
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            background-color: #007bff;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
+            background-color: #f1f1f1;
         }
 
         /* CSS cho trạng thái đơn hàng */
@@ -106,13 +123,22 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        <!-- Search Form -->
+        <form action="{{ route('admin.orders.index') }}" method="GET" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên hoặc số điện thoại" value="{{ request()->input('search') }}">
+                <button class="btn btn-primary" type="submit">Tìm Kiếm</button>
+            </div>
+        </form>
+
         <table class="table">
             <thead>
                 <tr>
-                    <th>STT</th> <!-- Số thứ tự -->
+                    <th>STT</th>
                     <th>Tên Khách Hàng</th>
+                    <th>Số Điện Thoại</th>
                     <th>Địa Chỉ Giao Hàng</th>
-                    <th>Phương Thức Thanh Toán</th>
+                    <th class="payment-method">Phương Thức Thanh Toán</th>
                     <th>Trạng Thái</th>
                     <th>Tổng Tiền</th>
                     <th>Hành Động</th>
@@ -121,10 +147,11 @@
             <tbody>
                 @foreach($orders as $index => $order)
                     <tr>
-                        <td>{{ $index + 1 }}</td> <!-- Hiển thị STT -->
-                        <td>{{ $order->user->name }}</td> <!-- Hiển thị tên khách hàng -->
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $order->user->name }}</td>
+                        <td>{{ $order->phone }}</td>
                         <td>{{ $order->shipping_address }}</td>
-                        <td>{{ $order->payment_method }}</td>
+                        <td class="payment-method">{{ $order->payment_method }}</td>
                         <td class="@switch($order->status)
                                         @case('pending')
                                             status-pending
@@ -158,7 +185,7 @@
                                     Không xác định
                             @endswitch
                         </td>
-                        <td>{{ number_format($order->total_price, 0, ',', '.') }} VNĐ</td> <!-- Hiển thị tổng tiền -->
+                        <td>{{ number_format($order->total_price, 0, ',', '.') }} VNĐ</td>
                         <td>
                             <a href="{{ route('admin.orders.edit', $order->id) }}" class="btn">Sửa</a>
                         </td>
