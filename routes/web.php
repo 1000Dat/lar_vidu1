@@ -10,6 +10,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AdminOrderController;
 
 // Routes for guest access (registration, login)
 Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -55,6 +56,7 @@ Route::resource('orders', OrderController::class);
 Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 
 
+
     // Routes admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
@@ -74,7 +76,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('products/{product}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
     Route::put('products/{product}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
     Route::delete('products/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+
+    Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/admin/orders/{id}/edit', [AdminOrderController::class, 'edit'])->name('admin.orders.edit');
+    Route::put('/admin/orders/{id}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
+
 });
+
+// ...
+
+
 
     
 });

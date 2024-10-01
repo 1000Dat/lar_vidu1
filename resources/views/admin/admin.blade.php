@@ -92,6 +92,7 @@
                 <div class="links">
                     <a href="{{ route('admin.categories') }}">Danh mục</a>
                     <a href="{{ route('admin.products') }}">Sản phẩm</a>
+                    <a href="{{ route('admin.orders.index') }}">Đơn hàng</a> <!-- Thêm liên kết tới đơn hàng -->
                 </div>
                 <div class="logout">
                     <form action="{{ route('logout') }}" method="POST">
