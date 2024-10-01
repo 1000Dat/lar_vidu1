@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\OrderController;
 
 // Routes for guest access (registration, login)
 Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -48,21 +49,11 @@ Route::post('/payment/process', [PaymentController::class, 'processPayment'])->n
 
 
 
-  // Route xử lý thanh toán
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index')->middleware('auth');
 
-// Định nghĩa route cho trang thanh toán
+Route::resource('orders', OrderController::class);
+Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 
-    // Admin routes
-    // Route::middleware('admin')->group(function () {
-    //     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-        
-
-    //     // Admin categories
-    //     Route::resource('admin/categories', CategoryController::class);
-
-    //     // Admin products
-    //     Route::resource('admin/products', ProductController::class)->except(['index', 'show']);
-    // });
 
     // Routes admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

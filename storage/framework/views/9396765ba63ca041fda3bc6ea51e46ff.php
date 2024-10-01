@@ -2,20 +2,20 @@
 
 <?php $__env->startSection('content'); ?>
     <div class="container">
-      
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0 text-primary">Chào mừng đến với trang  </h1>
+            <h1 class="mb-0 text-primary">Chào mừng đến với trang</h1>
             <form action="<?php echo e(route('logout')); ?>" method="POST">
                 <?php echo csrf_field(); ?>
                 <button type="submit" class="btn btn-danger shadow">Đăng xuất</button>
             </form>
         </div>
-   <!-- Link đến trang Giỏ Hàng -->
-   <div class="d-flex justify-content-end mb-4">
-   <a href="<?php echo e(route('cart.index')); ?>" class="btn btn-warning">Xem Giỏ Hàng</a>
 
+        <!-- Link đến trang Giỏ Hàng và Lịch sử Đơn hàng -->
+        <div class="d-flex justify-content-end mb-4">
+            <a href="<?php echo e(route('cart.index')); ?>" class="btn btn-warning me-2">Xem Giỏ Hàng</a>
+            <a href="<?php echo e(route('orders.index')); ?>" class="btn btn-info">Lịch sử Đơn hàng</a>
         </div>
-        
+
         <!-- Hiển thị sản phẩm -->
         <div class="row">
             <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -30,8 +30,7 @@
                             <div class="btn-group">
                                 <a href="<?php echo e(route('products.show', $product->id)); ?>" class="btn btn-info">Chi tiết</a>
                                 <a href="#" class="btn btn-primary">Mua Ngay</a>
-                               <!-- Nút "Thêm vào Giỏ Hàng" -->
-                               <form action="<?php echo e(route('cart.add', $product->id)); ?>" method="POST">
+                                <form action="<?php echo e(route('cart.add', $product->id)); ?>" method="POST">
                                     <?php echo csrf_field(); ?>
                                     <button type="submit" class="btn btn-secondary">Thêm vào Giỏ Hàng</button>
                                 </form>
@@ -90,6 +89,18 @@
             white-space: nowrap;  /* Ngăn chặn văn bản trong nút xuống dòng */
         }
 
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #fff;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: #fff;
+        }
+
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
@@ -123,4 +134,5 @@
         }
     </style>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('products.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\lar_vidu1\resources\views/products/index.blade.php ENDPATH**/ ?>

@@ -113,7 +113,7 @@ public function confirm(Request $request)
     })->delete();
 
     // Chuyển hướng đến trang xác nhận
-    return redirect()->route('products.index')->with('success', 'Đặt hàng thành công!');
+    return redirect()->route('orders.index')->with('success', 'Đặt hàng thành công!');
 }
 
 

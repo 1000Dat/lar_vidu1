@@ -4,20 +4,20 @@
 
 @section('content')
     <div class="container">
-      
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0 text-primary">Chào mừng đến với trang  </h1>
+            <h1 class="mb-0 text-primary">Chào mừng đến với trang</h1>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-danger shadow">Đăng xuất</button>
             </form>
         </div>
-   <!-- Link đến trang Giỏ Hàng -->
-   <div class="d-flex justify-content-end mb-4">
-   <a href="{{ route('cart.index') }}" class="btn btn-warning">Xem Giỏ Hàng</a>
 
+        <!-- Link đến trang Giỏ Hàng và Lịch sử Đơn hàng -->
+        <div class="d-flex justify-content-end mb-4">
+            <a href="{{ route('cart.index') }}" class="btn btn-warning me-2">Xem Giỏ Hàng</a>
+            <a href="{{ route('orders.index') }}" class="btn btn-info">Lịch sử Đơn hàng</a>
         </div>
-        
+
         <!-- Hiển thị sản phẩm -->
         <div class="row">
             @foreach ($products as $product)
@@ -32,8 +32,7 @@
                             <div class="btn-group">
                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-info">Chi tiết</a>
                                 <a href="#" class="btn btn-primary">Mua Ngay</a>
-                               <!-- Nút "Thêm vào Giỏ Hàng" -->
-                               <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                                <form action="{{ route('cart.add', $product->id) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-secondary">Thêm vào Giỏ Hàng</button>
                                 </form>
@@ -90,6 +89,18 @@
             padding: 0.5rem 1rem;
             margin: 0;  /* Loại bỏ khoảng cách ngoài nút */
             white-space: nowrap;  /* Ngăn chặn văn bản trong nút xuống dòng */
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #fff;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: #fff;
         }
 
         .btn-primary {
