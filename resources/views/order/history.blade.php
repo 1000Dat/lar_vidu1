@@ -52,7 +52,7 @@
                                 <form action="{{ route('orders.destroy', $order->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Hủy đơn hàng</button>
                                 </form>
                             @endif
                         </td>

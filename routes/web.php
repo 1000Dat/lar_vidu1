@@ -80,6 +80,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/admin/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{id}/edit', [AdminOrderController::class, 'edit'])->name('admin.orders.edit');
     Route::put('/admin/orders/{id}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
+
+
+    Route::get('/admin/reports', [AdminController::class, 'reports'])->name('admin.reports');
+
     
 
 });

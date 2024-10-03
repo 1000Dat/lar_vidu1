@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -184,4 +186,38 @@ class AdminController extends Controller
             abort(404, 'Image not found');
         }
     }
+
+    
+    public function reports()
+    {
+        $totalOrders = Order::count();
+        $totalProducts = Product::count();
+        $totalRevenue = Order::sum('total_price');
+        
+        // Lấy sản phẩm đã bán trong vòng 1 tháng và thống kê theo ngày
+        $productsSoldLastMonth = Product::withSum('orderItems', 'quantity')
+            ->whereHas('orderItems', function($query) {
+                $query->where('created_at', '>=', now()->subMonth());
+            })
+            ->get()
+            ->map(function ($product) {
+                $product->sold_quantity = $product->order_items_sum_quantity; // Số lượng đã bán
+                $product->remaining_stock = $product->quantity; // Số lượng còn lại trong kho
+                return $product;
+            });
+    
+        // Thống kê doanh thu và số lượng đơn hàng theo ngày
+        $dailySales = Order::selectRaw('DATE(created_at) as date, SUM(total_price) as daily_revenue, COUNT(*) as total_orders')
+            ->where('created_at', '>=', now()->subMonth())
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
+        
+        return view('admin.reports', compact('totalOrders', 'totalProducts', 'totalRevenue', 'productsSoldLastMonth', 'dailySales'));
+    }
+    
+    
+    
+    
+
 }
