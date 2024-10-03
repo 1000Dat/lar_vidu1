@@ -135,6 +135,7 @@
             <thead>
                 <tr>
                     <th>STT</th>
+                    <th>Mã Đơn Hàng</th>
                     <th>Tên Khách Hàng</th>
                     <th>Số Điện Thoại</th>
                     <th>Địa Chỉ Giao Hàng</th>
@@ -148,6 +149,7 @@
                 @foreach($orders as $index => $order)
                     <tr>
                         <td>{{ $index + 1 }}</td>
+                        <td>{{ $order->id }}</td>
                         <td>{{ $order->user->name }}</td>
                         <td>{{ $order->phone }}</td>
                         <td>{{ $order->shipping_address }}</td>
