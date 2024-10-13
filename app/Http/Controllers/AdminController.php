@@ -9,6 +9,8 @@ use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+
 
 class AdminController extends Controller
 {
@@ -216,8 +218,44 @@ class AdminController extends Controller
         return view('admin.reports', compact('totalOrders', 'totalProducts', 'totalRevenue', 'productsSoldLastMonth', 'dailySales'));
     }
     
-    
-    
+    public function showChart()
+{
+    // Tính toán doanh thu hàng ngày cho biểu đồ
+    $dailySales = Order::selectRaw('DATE(created_at) as date, SUM(total_price) as daily_revenue')
+        ->where('created_at', '>=', now()->subMonth())
+        ->groupBy('date')
+        ->orderBy('date', 'asc') // Sắp xếp theo ngày
+        ->get();
+
+    // Tính toán doanh thu hàng tháng cho biểu đồ
+    $monthlySales = Order::selectRaw('MONTH(created_at) as month, YEAR(created_at) as year, SUM(total_price) as total_revenue')
+        ->groupBy('month', 'year')
+        ->orderBy('year', 'asc') // Sắp xếp theo năm
+        ->orderBy('month', 'asc') // Sắp xếp theo tháng
+        ->get();
+
+    // Tính toán doanh thu theo phương thức thanh toán cho biểu đồ
+    $revenueByPaymentMethod = Order::select('payment_method', DB::raw('SUM(total_price) as total_revenue'))
+        ->groupBy('payment_method')
+        ->get();
+
+    // Chuẩn bị dữ liệu cho biểu đồ
+    $labelsDaily = $dailySales->pluck('date')->toArray(); // Ngày cho trục x
+    $revenuesDaily = $dailySales->pluck('daily_revenue')->toArray(); // Dữ liệu doanh thu hàng ngày
+
+    $labelsMonthly = $monthlySales->map(function ($item) {
+        return $item->month . '/' . $item->year; // Định dạng tháng/năm
+    })->toArray();
+    $revenuesMonthly = $monthlySales->pluck('total_revenue')->toArray(); // Dữ liệu doanh thu tháng
+
+    $labelsPaymentMethod = $revenueByPaymentMethod->pluck('payment_method')->toArray(); // Phương thức thanh toán
+    $revenuesPaymentMethod = $revenueByPaymentMethod->pluck('total_revenue')->toArray(); // Dữ liệu doanh thu theo phương thức thanh toán
+
+    return view('admin.chart', compact('labelsDaily', 'revenuesDaily', 'labelsMonthly', 'revenuesMonthly', 'labelsPaymentMethod', 'revenuesPaymentMethod'));
+}
+
+
+
     
 
 }

@@ -84,6 +84,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::get('/admin/reports', [AdminController::class, 'reports'])->name('admin.reports');
 
+    Route::get('/admin/charts', [AdminController::class, 'showChart'])->name('admin.charts');
+    
+
+
     
 
 });
